@@ -1,9 +1,16 @@
-var toto = {};
+var toto = {}, titi = {};
+//var apiUrl = "https://api.openstreetmap.org/api/0.6/";
+//var node = 2756579027;
+
+var apiUrl = "https://master.apis.dev.openstreetmap.org/api/0.6/"
+var testNodeId = 4316641109;
+
 
 var osmSpellCheck = {
 
     init: function() {
         //bind controls
+        var nodeId = $("#nodeId").val(testNodeId);
         $("#btnGetOverpass").on("click", this.getOverpassNodeInfo);
         $("#btnGetApi").on("click", this.getApiNodeInfo);
     },
@@ -11,15 +18,15 @@ var osmSpellCheck = {
     getOverpassNodeInfo: function() {
         var nodeId = $("#nodeId").val();
         var time = new Date().toLocaleTimeString();
-        osmSpellCheck.overpass.getNode(2756579027);
+        osmSpellCheck.overpass.getNode(nodeId);
         $("#result").text(time);
     },
 
     getApiNodeInfo: function() {
         var nodeId = $("#nodeId").val();
         var time = new Date().toLocaleTimeString();
-        osmSpellCheck.omsapi.getNode(2756579027);
-        $("#result").text(time);
+        osmSpellCheck.omsapi.getNode(nodeId);
+        //$("#result").text(time);
     },
 
     overpass: {
@@ -38,19 +45,29 @@ var osmSpellCheck = {
            
         },
     },
-
+   
     omsapi: {
         getNode: function(nodeId) {
-           var apiUrl = "https://api.openstreetmap.org/api/0.6/";
-           var query = "node/" + nodeId;
-           var url = apiUrl + query;
-           $.get(url, function(data) {
-               console.log(data);
-               var tag = data.querySelector("tag[k='operator']");
-               tag.setAttribute("v", "CAISSE EPARGNE");
-               console.log(data);
-               toto = data;
-           });
+            var query = "node/" + nodeId;
+            var url = apiUrl + query;
+            console.log(url);
+            $.ajax({
+                method: "GET",
+                url: url
+            })
+            .done(function(xml) {
+                $("#result").text(xml);
+                console.log(xml);
+                var tag = xml.querySelector("tag[k='operator']");
+                console.log(tag);
+                tag.setAttribute("v", "CAISSE EPARGNE");
+                console.log(tag);
+                toto = xml;
+                titi = tag;
+            })
+            .fail(function(data) {
+                $("#result").text(data);
+            });
         },
     },
 };
