@@ -3,73 +3,74 @@ var toto = {}, titi = {};
 //var node = 2756579027;
 
 var apiUrl = "https://master.apis.dev.openstreetmap.org/api/0.6/"
-var testNodeId = 4316641109;
+//var testNodeId = 4316641109;
 
 
 var osmSpellCheck = {
 
     init: function() {
         //bind controls
-        var nodeId = $("#nodeId").val(testNodeId);
-        $("#btnGetOverpass").on("click", this.getOverpassNodeInfo);
-        $("#btnGetApi").on("click", this.getApiNodeInfo);
-    },
-
-    getOverpassNodeInfo: function() {
-        var nodeId = $("#nodeId").val();
-        var time = new Date().toLocaleTimeString();
-        osmSpellCheck.overpass.getNode(nodeId);
-        $("#result").text(time);
+        //var nodeId = $("#nodeId").val(testNodeId);
+        $("#btnGetApi").on("click", osmSpellCheck.getApiNodeInfo);
+        $("#btnOpenChangeset").on("click", osmSpellCheck.openChangeset);
     },
 
     getApiNodeInfo: function() {
         var nodeId = $("#nodeId").val();
         var time = new Date().toLocaleTimeString();
-        osmSpellCheck.omsapi.getNode(nodeId);
+        osmSpellCheck.getNode(nodeId);
         //$("#result").text(time);
     },
 
-    overpass: {
-        getNode: function(nodeId) {
-            /*
-                [out:json];
-                area[name="Grenoble"]->.a;
-                node[amenity=atm](area.a);
-                out;
-            */
-           var overpassUrl = "https://overpass-api.de/api/interpreter?data=";
-           var query = "[out:json];node("+ nodeId +");out;";
-           $.getJSON(overpassUrl, {"data": query}, function(data) {
-               console.log(data);
-           });
-           
-        },
+    openChangeset: function(){
+        
     },
-   
-    omsapi: {
-        getNode: function(nodeId) {
-            var query = "node/" + nodeId;
-            var url = apiUrl + query;
-            console.log(url);
-            $.ajax({
-                method: "GET",
-                url: url
-            })
-            .done(function(xml) {
-                $("#result").text(xml);
-                console.log(xml);
-                var tag = xml.querySelector("tag[k='operator']");
-                console.log(tag);
-                tag.setAttribute("v", "CAISSE EPARGNE");
-                console.log(tag);
-                toto = xml;
-                titi = tag;
-            })
-            .fail(function(data) {
-                $("#result").text(data);
-            });
-        },
+
+    getNode: function(nodeId) {
+        var options = {
+            username: "Binnette",
+            password: "********",
+            methodUrl: "node/" + nodeId,
+            method: "GET"
+        };
+        
+        var callbackOk = function(xml) {
+            $("#result").text(xml);
+            console.log(xml);
+            var tag = xml.querySelector("tag[k='operator']");
+            console.log("current operator");
+            console.log(tag);
+            tag.setAttribute("v", "CAISSE EPARGNE");
+            console.log("new operator");
+            console.log(tag);
+            toto = xml;
+            titi = tag;
+        };
+
+        var callbackKo = function(data) {
+            $("#result").text(data);
+        };
+
+        osmSpellCheck.callApi(options, callbackOk, callbackKo);
     },
+
+    callApi(options, callbackOk, callbackKo) {
+        var url = apiUrl + options.methodUrl;
+        var autorization = btoa(options.username + ":" + options.password);
+        console.log("Url = " + url);
+        $.ajax({
+            /*xhrFields: {
+                withCredentials: true
+            },*/
+            headers: {
+                'Authorization': 'Basic ' + autorization
+            },
+            method: options.method,
+            url: url
+        })
+        .done(callbackOk)
+        .fail(callbackKo);
+    }
 };
 
 /*

@@ -22,15 +22,25 @@
   <![endif]-->
 
   <!-- Add your site or application content here -->
-  <h1>OpenStreetMap SpellChecler</h1>
-
-  <h2>Query</h2>
-  <label for="nodeId">NodeId</label>
-  <input id="nodeId" type="number" value="2756579027" />
-  <button id="btnGetOverpass" type="submit">Overpass Get</button>
-  <button id="btnGetApi" type="submit">API Get</button>
+  <h4>OpenStreetMap SpellChecker</h4>
+  <b>Sandbox</b>
+  <div>
+    <a href="https://master.apis.dev.openstreetmap.org/#map=17/45.18527/5.76001">https://master.apis.dev.openstreetmap.org</a>
+  </div>
+  <div>
+    <a href="https://master.apis.dev.openstreetmap.org/node/4316642172">Test node 4316642172</a>
+  </div>
   
-  <h2>Result</h2>
+  <b>Query</b>
+  <div>
+    <label for="nodeId">NodeId</label>
+    <!-- 2756579027 -->
+    <input id="nodeId" type="number" value="4316642172" />
+    <button id="btnGetApi" type="submit">API Get</button>
+    <button id="btnOpenChangeset" type="submit">Open Changeset</button>
+  </div>
+
+  <b>Result</b>
   <div id="result"></div>
 
 
